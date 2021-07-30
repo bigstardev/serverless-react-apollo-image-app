@@ -1,0 +1,40 @@
+service: apollo-serverless-img-lambda
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-1
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    S3_USER_KEY: ${env:S3_USER_KEY}
+    S3_USER_SECRET: ${env:S3_USER_SECRET}
+    S3_IMAGES_BUCKET: ${env:S3_IMAGES_BUCKET}
+    ENDPOINT_URL: ${env:ENDPOINT_URL}
+    FRONTEND_URL: ${env:FRONTEND_URL}
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+          - s3:*
+      Resource: '*'
+
+plugins:
+  - serverless-offline
+
+package:
+  individually: true
+
+functions:
+  graphql:
+    handler: index.handler
+    events:
+      - http:
+          path: upload
+          method: post
+          cors: true
+      - http:
+          path: upload
+          method: get
+          cors: true
